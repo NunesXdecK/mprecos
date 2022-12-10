@@ -57,13 +57,17 @@ export default function ProductForm(props: ProductFormProps) {
     const getBoxValue = () => {
         let boxLocal = 0
         let valueLocal = 0
+        let result = 0
         if (parseFloat(box)) {
             boxLocal = parseFloat(box)
         }
         if (parseFloat(props.product?.valueString)) {
             valueLocal = parseFloat(props.product?.valueString)
         }
-        return boxLocal / valueLocal
+        if (valueLocal / boxLocal) {
+            result = valueLocal / boxLocal
+        }
+        return result
     }
     return (
         <View style={styles.container}>

@@ -25,7 +25,7 @@ export default function ProductHistoryForm(props: ProductHistoryProps) {
                     <Text style={styles.title}>{item.name}</Text>
                     <Text style={styles.info}>{
                         (item.ean?.toString().length > 0 ? "Codigo " + item.ean + " " : "") +
-                        (item.value?.toString().length > 0 ? "com valor de " + item.value?.toFixed(2) + " " : "") +
+                        (item.value?.toString().length > 0 ? "com valor de " + item.value + " " : "") +
                         (item.local?.name?.length > 0 ? "no " + item.local?.name + " " : "") +
                         (item.dateString?.length > 0 ? "em " + item.dateString : "")
                     }</Text>

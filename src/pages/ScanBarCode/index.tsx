@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BarCodeScanner } from 'expo-barcode-scanner'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View, StyleSheet, ToastAndroid } from 'react-native'
 import { getProductByEanData } from '../../db/productDB'
 import ProductModalForm from '../../components/projectModalForm'
 import { defaultProduct, Product } from '../../interfaces/interfaces'
@@ -25,6 +25,7 @@ export default function ScanBarCode() {
   }, [])
 
   const handleBarCodeScanned = async (barcode: BarCode) => {
+    ToastAndroid.show(barcode.data, ToastAndroid.SHORT)
     const list = await getProductByEanData(barcode.data)
     const p: Product = {
       ...list[0] ?? defaultProduct,
