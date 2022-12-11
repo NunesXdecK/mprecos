@@ -5,7 +5,7 @@ import { handleFormatDateForShowB, handleGetDateFormatedToUTCFomB, handleSortByD
 
 export const PRODUCT_KEY = "product"
 
-export const handleData = (): Product[] => {
+export const handleData = async (): Promise<Product[]> => {
     let value: Product[] = []
     const local: Local = { name: "Comercial Rodrigues", short: "CORO" }
     data.map((element, index) => {
@@ -27,7 +27,7 @@ export const handleData = (): Product[] => {
 }
 
 export const getProductAllData = async (): Promise<Product[]> => {
-    let value: Product[] = handleData()
+    let value: Product[] = await handleData()
     try {
         const jsonValue = await AsyncStorage.getItem(PRODUCT_KEY)
         const array: Product[] = jsonValue != null ? JSON.parse(jsonValue) : []

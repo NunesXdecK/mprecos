@@ -4,6 +4,7 @@ import { Text, View, StyleSheet, ToastAndroid } from 'react-native'
 import { getProductByEanData } from '../../db/productDB'
 import ProductModalForm from '../../components/projectModalForm'
 import { defaultProduct, Product } from '../../interfaces/interfaces'
+import Loading from '../../components/loading'
 
 interface BarCode {
   type?: any,
@@ -14,6 +15,7 @@ export default function ScanBarCode() {
   const [product, setProduct] = useState<Product>(defaultProduct)
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [scanned, setScanned] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -25,6 +27,7 @@ export default function ScanBarCode() {
   }, [])
 
   const handleBarCodeScanned = async (barcode: BarCode) => {
+    setIsLoading(true)
     ToastAndroid.show(barcode.data, ToastAndroid.SHORT)
     const list = await getProductByEanData(barcode.data)
     const p: Product = {
@@ -32,25 +35,27 @@ export default function ScanBarCode() {
       ean: barcode.data,
       valueString: list[0]?.value?.toString() ?? "0",
     }
+    setIsLoading(false)
     setProduct(p)
     setScanned(true)
   }
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>
+    return <Loading isLoading={true}><Text>Requesting for camera permission</Text></Loading>
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>
+    return <Loading isLoading={true}><Text>No access to camera</Text></Loading>
   }
 
   return (
     <View style={styles.container}>
-      {!scanned &&
+      {!scanned && !isLoading &&
         <BarCodeScanner
           style={StyleSheet.absoluteFillObject}
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         />
       }
+      <Loading isLoading={isLoading} />
       <ProductModalForm
         isOpen={scanned}
         product={product}

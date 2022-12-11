@@ -1,12 +1,16 @@
+import Loading from "../../components/loading"
 import React, { useEffect, useState } from "react"
-import { defaultProduct, Product } from "../../interfaces/interfaces"
 import { getProductAllData } from "../../db/productDB"
 import { handleSortByDate } from "../../util/dateUtils"
 import ProductModalForm from "../../components/projectModalForm"
+import { defaultProduct, Product } from "../../interfaces/interfaces"
 import { Text, TextInput, View, StyleSheet, FlatList, TouchableOpacity, Button } from "react-native"
+
+const delay = (amount = 1000) => new Promise(resolve => setTimeout(resolve, amount))
 
 export default function Products() {
   const [product, setProduct] = useState<Product>(defaultProduct)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isCad, setIsCad] = useState<boolean>(false)
   const [search, setSearch] = useState("")
   const [list, setList] = useState<Product[]>([])
@@ -21,55 +25,18 @@ export default function Products() {
     })
     filteredList = filteredList.sort(handleSortByDate)
   }
-
   useEffect(() => {
-    if (list.length === 0) {
+    if (isLoading && list.length === 0) {
       getProductAllData().then((res) => {
         setList(res)
+        setIsLoading(false)
       })
     }
   }, [])
 
   return (
     <View style={styles.container}>
-      <Button
-        title="novo"
-        onPress={() => {
-          setProduct(defaultProduct)
-          setIsCad(true)
-        }}
-      />
-      <TextInput
-        value={search}
-        style={styles.input}
-        placeholder="Pesquisa..."
-        onChangeText={text => setSearch(text)}
-      />
-      <FlatList
-        data={filteredList}
-        keyExtractor={(item) => item.name + "-" + item.ean + "-" + item.date + "-" + item.date}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.listItem}
-            onPress={() => {
-              setIsCad(true)
-              setProduct({ ...item, valueString: item.value?.toString() })
-            }}
-          >
-            <Text>
-              {
-                (item.ean?.toString().length > 0 ? "EAN: " + item.ean : "") +
-                (item.name?.length > 0 ? "\nNome: " + item.name : "") +
-                (item.value?.toString().length > 0 ? "\nValor: " + item.value : "") +
-                (item.dateString?.length > 0 ? "\nData: " + item.dateString : "") +
-                (item.local?.name?.length > 0 ? "\nLocal: " + item.local?.name : "") +
-                (item.local?.short?.length > 0 ? " - " + item.local?.short : "")
-              }
-            </Text>
-          </TouchableOpacity>
-        )}
-
-      />
+      <Loading isLoading={isLoading} />
       <ProductModalForm
         isOpen={isCad}
         product={product}
@@ -80,6 +47,48 @@ export default function Products() {
           setIsCad(false)
         }}
       />
+      {!isLoading &&
+        <>
+          <Button
+            title="novo"
+            onPress={() => {
+              setProduct(defaultProduct)
+              setIsCad(true)
+            }}
+          />
+          <TextInput
+            value={search}
+            style={styles.input}
+            placeholder="Pesquisa..."
+            onChangeText={text => setSearch(text)}
+          />
+          <FlatList
+            data={filteredList}
+            keyExtractor={(item) => item.name + "-" + item.ean + "-" + item.date + "-" + item.date}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.listItem}
+                onPress={() => {
+                  setProduct({ ...item, valueString: item.value?.toString() })
+                  setIsCad(true)
+                }}
+              >
+                <Text>
+                  {
+                    (item.ean?.toString().length > 0 ? "EAN: " + item.ean : "") +
+                    (item.name?.length > 0 ? "\nNome: " + item.name : "") +
+                    (item.value?.toString().length > 0 ? "\nValor: " + item.value : "") +
+                    (item.dateString?.length > 0 ? "\nData: " + item.dateString : "") +
+                    (item.local?.name?.length > 0 ? "\nLocal: " + item.local?.name : "") +
+                    (item.local?.short?.length > 0 ? " - " + item.local?.short : "")
+                  }
+                </Text>
+              </TouchableOpacity>
+            )}
+
+          />
+        </>
+      }
     </View>
   )
 }
@@ -87,18 +96,19 @@ export default function Products() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 8,
+    padding: 16,
   },
   title: {
     fontSize: 24,
   },
   input: {
     borderRadius: 6,
+    marginVertical: 10,
     paddingVertical: 16,
     paddingHorizontal: 20,
     backgroundColor: "#000",
   },
   listItem: {
-    padding: 16,
+    paddingVertical: 10,
   },
 })
