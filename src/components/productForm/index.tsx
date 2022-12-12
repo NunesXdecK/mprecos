@@ -9,6 +9,7 @@ import { handleNewDateToUTC, handleUTCToDateFullShow } from "../../util/dateUtil
 interface ProductFormProps {
     isOpen?: boolean,
     product?: Product,
+    products?: Product[],
     onSet?: (arg0: Product) => void,
     afterSave?: (arg0: Product) => void,
     setIsOpen?: (arg0: boolean) => void,
@@ -17,6 +18,7 @@ interface ProductFormProps {
 export default function ProductForm(props: ProductFormProps) {
     const [box, setBox] = useState<string>("")
     const [unit, setUnit] = useState<string>("")
+    const [percent, setPercent] = useState<string>("")
     const handleSetName = (value: string) => { handleOnSet({ ...props.product, name: value }) }
     const handleSetEan = (value: string) => {
         let final = 0
@@ -69,6 +71,25 @@ export default function ProductForm(props: ProductFormProps) {
         }
         return result
     }
+    const getPercentValue = () => {
+        let percentLocal = 0
+        let valueLocal = 0
+        let result = 0
+        if (percent.length > 0) {
+            let percentValue = (percent.length < 3 ? "0" : "") + percent.replaceAll(".", "").replaceAll(",", "")
+            percentValue = percentValue.substring(0, percentValue.length - 2) + "." + percentValue.substring(percentValue.length - 2, percentValue.length)
+            if (parseFloat(percentValue)) {
+                percentLocal = parseFloat(percentValue)
+            }
+        }
+        if (parseFloat(props.product?.valueString)) {
+            valueLocal = parseFloat(props.product?.valueString)
+        }
+        if (valueLocal / percentLocal) {
+            result = valueLocal * percentLocal
+        }
+        return result
+    }
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Product</Text>
@@ -112,6 +133,16 @@ export default function ProductForm(props: ProductFormProps) {
                 />
                 <Text> / {props.product?.valueString} = {getBoxValue()}</Text>
             </View>
+            <View style={styles.row}>
+                <TextInput
+                    value={percent}
+                    placeholder="Porcentagem"
+                    keyboardType="numeric"
+                    style={styles.inputNumeric}
+                    onChangeText={text => setPercent(text)}
+                />
+                <Text> / {props.product?.valueString} = {getPercentValue()}</Text>
+            </View>
             <Button
                 title="Salvar"
                 onPress={async () => {
@@ -143,7 +174,7 @@ export default function ProductForm(props: ProductFormProps) {
                     }
                 }}
             />
-            <ProductHistoryForm ean={props.product?.ean?.toString()} />
+            <ProductHistoryForm products={props.products} ean={props.product?.ean?.toString()} />
         </View>
     )
 }

@@ -1,21 +1,17 @@
+import React from "react"
 import { Text } from "react-native"
-import React, { useEffect, useState } from "react"
-import { getProductByEanData } from "../../db/productDB"
+import { Product } from "../../interfaces/interfaces"
 import { FlatList, StyleSheet, View } from "react-native"
 
 interface ProductHistoryProps {
     ean?: string,
+    products?: Product[],
 }
 
 export default function ProductHistoryForm(props: ProductHistoryProps) {
-    const [list, setList] = useState([])
-    useEffect(() => {
-        getProductByEanData(props.ean ?? "").then((res) => {
-            if (res.length > 0) {
-                setList(res)
-            }
-        })
-    }, [])
+    const list = props.products?.filter((product: Product) => {
+        return props.ean?.toString().toLowerCase() === product?.ean?.toString().toLowerCase()
+    }) ?? []
     return (
         <FlatList
             data={list}

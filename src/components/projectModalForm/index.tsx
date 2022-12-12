@@ -1,10 +1,11 @@
 import ProductForm from "../productForm"
 import { Product } from "../../interfaces/interfaces"
-import {  Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
 interface ProductModalFormProps {
     isOpen?: boolean,
     product?: Product,
+    products?: Product[],
     onSet?: (arg0: Product) => void,
     afterSave?: (arg0: Product) => void,
     setIsOpen?: (arg0: boolean) => void,
@@ -42,6 +43,7 @@ export default function ProductModalForm(props: ProductModalFormProps) {
                     <ProductForm
                         product={props.product}
                         onSet={handleSetProduct}
+                        products={props.products}
                         afterSave={(arg0) => {
                             handleAfterSave(arg0)
                             handleSetIsOpen(false)

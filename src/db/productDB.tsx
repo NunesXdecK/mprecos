@@ -16,8 +16,9 @@ export const handleData = async (): Promise<Product[]> => {
         const localProduct: Product = {
             ean: ean,
             local: local,
-            value: element.valor,
             name: element.produto,
+            valueString: element.valor,
+            value: parseFloat(element.valor) ?? element.valor,
             date: handleGetDateFormatedToUTCFomB(element.date),
             dateString: handleFormatDateForShowB(element.date),
         }

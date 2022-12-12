@@ -39,6 +39,7 @@ export default function Products() {
       <Loading isLoading={isLoading} />
       <ProductModalForm
         isOpen={isCad}
+        products={list}
         product={product}
         onSet={setProduct}
         setIsOpen={setIsCad}
