@@ -75,18 +75,27 @@ export default function ProductForm(props: ProductFormProps) {
         let percentLocal = 0
         let valueLocal = 0
         let result = 0
-        if (percent.length > 0) {
-            let percentValue = (percent.length < 3 ? "0" : "") + percent.replaceAll(".", "").replaceAll(",", "")
-            percentValue = percentValue.substring(0, percentValue.length - 2) + "." + percentValue.substring(percentValue.length - 2, percentValue.length)
-            if (parseFloat(percentValue)) {
-                percentLocal = parseFloat(percentValue)
+        try {
+            if (percent.length > 0) {
+                let percentValue = percent.replaceAll(".", "").replaceAll(",", "")
+                if (percentValue.length === 1) {
+                    percentValue = "00" + percentValue 
+                } else if (percentValue.length === 2) {
+                    percentValue = "0" + percentValue 
+                }
+                percentValue = percentValue.substring(0, percentValue.length - 2) + "." + percentValue.substring(percentValue.length - 2, percentValue.length)
+                if (parseFloat(percentValue)) {
+                    percentLocal = parseFloat(percentValue)
+                }
             }
-        }
-        if (parseFloat(props.product?.valueString)) {
-            valueLocal = parseFloat(props.product?.valueString)
-        }
-        if (valueLocal / percentLocal) {
-            result = valueLocal * percentLocal
+            if (parseFloat(props.product?.valueString)) {
+                valueLocal = parseFloat(props.product?.valueString)
+            }
+            if (valueLocal / percentLocal) {
+                result = valueLocal * percentLocal
+            }
+        } catch (err) {
+            console.warn(err)
         }
         return result
     }
